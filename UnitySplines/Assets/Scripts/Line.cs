@@ -8,10 +8,12 @@ namespace VDV.Spline
     public class Line : MonoBehaviour
     {
         [SerializeField]
-        private Vector3[] points;
+        private List<Vector3> points;
 
         [SerializeField]
         private bool loop;
+
+        protected virtual int PointsPerSegment { get { return 2; } }
 
         public Vector3 GetPoint(int i)
         {
@@ -24,9 +26,9 @@ namespace VDV.Spline
             {
                 if (i == 0)
                 {
-                    points[points.Length - 1] = point;
+                    points[points.Count - 1] = point;
                 }
-                else if (i == points.Length - 1)
+                else if (i == points.Count - 1)
                 {
                     points[0] = point;
                 }
@@ -34,9 +36,9 @@ namespace VDV.Spline
             points[i] = point;
         }
 
-        public int PointCount()
+        public int PointCount
         {
-            return points.Length;
+            get { return points.Count; }
         }
 
         public bool Loop
@@ -54,18 +56,41 @@ namespace VDV.Spline
 
         public void Reset()
         {
-            points = new[] {
-                new Vector3(1f, 0f, 0f),
-                new Vector3(2f, 0f, 0f)
-            };
+            points = new List<Vector3>();
+            for (var i = 0; i < PointsPerSegment; i++)
+            {
+                points.Add(new Vector3(i + 1, 0, 0));
+            }
         }
 
         public void AddSegment()
         {
-            Vector3 point = points[points.Length - 1];
-            Array.Resize(ref points, points.Length + 1);
-            point.x += 1f;
-            points[points.Length - 1] = point;
+            if (points.Count == 0)
+            {
+                Reset();
+            }
+            else
+            {
+                Vector3 point = points[points.Count - 1];
+                for (var i = 0; i < PointsPerSegment - 1; i++)
+                {
+                    point.x += 1f;
+                    points.Add(point);
+                }
+            }
+        }
+
+        public void DeleteSegment(int i)
+        {
+            if (points.Count == PointsPerSegment)
+            {
+                points.Clear();
+            }
+            else if (PointsPerSegment == 2)
+            {
+                points.RemoveAt(i);
+            }
+            // TODO: Generic Removal?
         }
     }
 

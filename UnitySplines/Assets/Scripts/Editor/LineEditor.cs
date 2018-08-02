@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -19,7 +20,7 @@ namespace VDV.Spline.Editor
         private void OnSceneGUI()
         {
             Line = target as Line;
-            if (Line == null || Line.PointCount() == 0)
+            if (Line == null || Line.PointCount == 0)
             {
                 return;
             }
@@ -27,7 +28,7 @@ namespace VDV.Spline.Editor
             HandleTransform = Tools.pivotRotation == PivotRotation.Local ? LineTransform.rotation : Quaternion.identity;
             Handles.color = Color.white;
             Vector3 start = RenderPoint(0);
-            for (var i = 0; i < Line.PointCount(); i++)
+            for (var i = 0; i < Line.PointCount; i++)
             {
                 Vector3 end = RenderPoint(i);
                 Handles.DrawLine(start, end);
@@ -72,7 +73,7 @@ namespace VDV.Spline.Editor
                 EditorUtility.SetDirty(Line);
                 Line.Loop = loop;
             }
-            if (SelectedPointIdx > 0 && SelectedPointIdx < Line.PointCount())
+            if (SelectedPointIdx >= 0 && SelectedPointIdx < Line.PointCount)
             {
                 GUILayout.Label("Selected Point");
                 EditorGUI.BeginChangeCheck();
@@ -82,6 +83,20 @@ namespace VDV.Spline.Editor
                     Undo.RecordObject(Line, "Move Point");
                     EditorUtility.SetDirty(Line);
                     Line.SetPoint(SelectedPointIdx, point);
+                }
+                if (GUILayout.Button("Delete Selected Segment"))
+                {
+                    Undo.RecordObject(Line, "Delete Segment");
+                    Line.DeleteSegment(SelectedPointIdx);
+                    EditorUtility.SetDirty(Line);
+                    if (SelectedPointIdx < 0)
+                    {
+                        SelectedPointIdx = 0;
+                    }
+                    else if (SelectedPointIdx >= Line.PointCount)
+                    {
+                        SelectedPointIdx = Line.PointCount - 1;
+                    }
                 }
             }
             if (GUILayout.Button("Add Segment"))
