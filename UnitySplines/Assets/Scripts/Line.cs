@@ -92,6 +92,38 @@ namespace VDV.Spline
             }
             // TODO: Generic Removal?
         }
+
+        public virtual float MinSqrDistanceFrom(Vector3 pos)
+        {
+            float minSqrDistance = Mathf.Infinity;
+            float sqrDistance;
+            for (var i = 1; i < points.Count; i++)
+            {
+                Vector3 a = points[i - 1];
+                Vector3 b = points[i];
+
+                // Distance from point a and pos
+                sqrDistance = (a - pos).sqrMagnitude;
+                if (sqrDistance < minSqrDistance)
+                {
+                    minSqrDistance = sqrDistance;
+                }
+                // Calculate minimum distance to infinite line
+                Vector3 lineVec = b - a;
+                sqrDistance = Vector3.Cross(lineVec, a - pos).sqrMagnitude/lineVec.sqrMagnitude;
+                if (sqrDistance < minSqrDistance)
+                {
+                    minSqrDistance = sqrDistance;
+                }
+            }
+            // Handle last point
+            sqrDistance = (points[points.Count - 1] - pos).sqrMagnitude;
+            if (sqrDistance < minSqrDistance)
+            {
+                minSqrDistance = sqrDistance;
+            }
+            return minSqrDistance;
+        }
     }
 
 }
