@@ -7,8 +7,7 @@ namespace VDV.Spline
 {
     public abstract class GenericLine<T> : MonoBehaviour where T : LineVertex, new()
     {
-        [SerializeField]
-        private List<T> points;
+        [SerializeField] protected List<T> points;
 
         [SerializeField]
         private bool loop;
@@ -94,36 +93,9 @@ namespace VDV.Spline
             // TODO: Generic Removal?
         }
 
-        public virtual float MinSqrDistanceFrom(Vector3 pos)
+        public virtual Helper.LinePoint ClosestPoint(Vector3 pos)
         {
-            float minSqrDistance = Mathf.Infinity;
-            float sqrDistance;
-            for (var i = 1; i < points.Count; i++)
-            {
-                Vector3 a = points[i - 1].Position;
-                Vector3 b = points[i].Position;
-
-                // Distance from point a and pos
-                sqrDistance = (a - pos).sqrMagnitude;
-                if (sqrDistance < minSqrDistance)
-                {
-                    minSqrDistance = sqrDistance;
-                }
-                // Calculate minimum distance to infinite line
-                Vector3 lineVec = b - a;
-                sqrDistance = Vector3.Cross(lineVec, a - pos).sqrMagnitude / lineVec.sqrMagnitude;
-                if (sqrDistance < minSqrDistance)
-                {
-                    minSqrDistance = sqrDistance;
-                }
-            }
-            // Handle last point
-            sqrDistance = (points[points.Count - 1].Position - pos).sqrMagnitude;
-            if (sqrDistance < minSqrDistance)
-            {
-                minSqrDistance = sqrDistance;
-            }
-            return minSqrDistance;
+            return new Helper.LinePoint {Distance = Mathf.Infinity};
         }
     }
 
