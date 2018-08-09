@@ -48,6 +48,7 @@ namespace VDV.Spline.Editor
             }
             if (SelectedPointIdx == i)
             {
+                OnRenderPoint(i, point, pos, size);
                 EditorGUI.BeginChangeCheck();
                 pos = Handles.DoPositionHandle(pos, HandleTransform);
                 if (EditorGUI.EndChangeCheck())
@@ -60,6 +61,8 @@ namespace VDV.Spline.Editor
             }
             return point;
         }
+
+        protected virtual void OnRenderPoint(int index, TVertex point, Vector3 pos, float handleSize) {}
 
         public override void OnInspectorGUI()
         {
@@ -86,6 +89,7 @@ namespace VDV.Spline.Editor
                     point.Position = pos;
                     Line.SetPoint(SelectedPointIdx, point);
                 }
+                OnInspectorPoint(SelectedPointIdx, point);
                 if (GUILayout.Button("Delete Selected Segment"))
                 {
                     Undo.RecordObject(Line, "Delete Segment");
@@ -108,5 +112,7 @@ namespace VDV.Spline.Editor
                 EditorUtility.SetDirty(Line);
             }
         }
+
+        protected virtual void OnInspectorPoint(int index, TVertex point) {}
     }
 }
