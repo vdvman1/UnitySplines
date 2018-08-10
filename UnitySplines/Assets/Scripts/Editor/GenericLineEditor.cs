@@ -43,12 +43,12 @@ namespace VDV.Spline.Editor
             float size = HandleUtility.GetHandleSize(pos);
             if (Handles.Button(pos, HandleTransform, size * HandleSize, size * PickSize, Handles.DotHandleCap))
             {
-                SelectedPointIdx = i;
-                Repaint();
+                OnSelectPoint();
+                SelectPoint(i);
             }
-            if (SelectedPointIdx == i)
+            OnRenderPoint(i, point, pos, size);
+            if (ShouldRenderPositionHandleForPoint(i))
             {
-                OnRenderPoint(i, point, pos, size);
                 EditorGUI.BeginChangeCheck();
                 pos = Handles.DoPositionHandle(pos, HandleTransform);
                 if (EditorGUI.EndChangeCheck())
@@ -62,20 +62,36 @@ namespace VDV.Spline.Editor
             return point;
         }
 
+        protected void SelectPoint(int index, bool notify = true)
+        {
+            SelectedPointIdx = index;
+            Repaint();
+            if(notify) OnSelectPoint();
+        }
+
+        protected virtual void OnSelectPoint() {}
+
+        protected virtual bool ShouldRenderPositionHandleForPoint(int index)
+        {
+            return SelectedPointIdx == index;
+        }
         protected virtual void OnRenderPoint(int index, TVertex point, Vector3 pos, float handleSize) {}
 
         public override void OnInspectorGUI()
         {
             Line = target as TLine;
             if (Line == null) return;
+
             EditorGUI.BeginChangeCheck();
             bool loop = EditorGUILayout.Toggle("Loop", Line.Loop);
-            if (EditorGUI.EndChangeCheck())
+            bool valid = AfterLoopToggleBox(loop);
+            if (valid && EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(Line, "Toggle Loop");
                 EditorUtility.SetDirty(Line);
                 Line.Loop = loop;
             }
+
             if (SelectedPointIdx >= 0 && SelectedPointIdx < Line.PointCount)
             {
                 GUILayout.Label("Selected Point");
@@ -114,5 +130,10 @@ namespace VDV.Spline.Editor
         }
 
         protected virtual void OnInspectorPoint(int index, TVertex point) {}
+
+        protected virtual bool AfterLoopToggleBox(bool newLoop)
+        {
+            return true;
+        }
     }
 }
