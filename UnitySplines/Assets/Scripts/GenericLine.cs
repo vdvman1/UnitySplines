@@ -77,6 +77,7 @@ namespace VDV.Spline
                     pos.x += 1f;
                     points.Add(new T {Position = pos});
                 }
+                SetPoint(points.Count - 1, points[points.Count - 1]);
             }
         }
 
