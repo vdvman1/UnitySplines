@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace VDV.Spline
 {
-    public class Helper
+    public static class Helper
     {
         public struct LinePoint
         {
