@@ -30,7 +30,8 @@ namespace VDV.Spline.Editor
             for (var i = 0; i < Line.PointCount; i++)
             {
                 TVertex end = RenderPoint(i);
-                Handles.DrawLine(start.Position, end.Position);
+                Handles.DrawLine(LineTransform.TransformPoint(start.Position), LineTransform.TransformPoint(
+                    end.Position));
                 start = end;
             }
         }
@@ -51,6 +52,7 @@ namespace VDV.Spline.Editor
             {
                 EditorGUI.BeginChangeCheck();
                 pos = Handles.DoPositionHandle(pos, HandleTransform);
+                pos = LineTransform.InverseTransformPoint(pos);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(Line, "Move Point");
