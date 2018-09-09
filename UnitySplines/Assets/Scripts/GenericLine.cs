@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
 namespace VDV.Spline
@@ -9,8 +13,7 @@ namespace VDV.Spline
     {
         [SerializeField] protected List<T> points;
 
-        [SerializeField]
-        private bool loop;
+        [SerializeField] private bool loop;
 
         protected virtual int PointsPerSegment { get { return 2; } }
 

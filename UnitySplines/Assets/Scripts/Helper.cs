@@ -1,5 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
 namespace VDV.Spline
@@ -36,6 +42,12 @@ namespace VDV.Spline
             line.Distance = (pos - line.Point).magnitude;
             return line;
         }
-    } 
 
+        public static IEnumerable<FieldInfo> GetSerializableFields(Type type)
+        {
+            return 
+                type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
+                .Where(field => field.IsPublic | field.IsDefined(typeof(SerializeField), false));
+        }
+    }
 }

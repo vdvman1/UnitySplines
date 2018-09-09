@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEditor;
 
@@ -129,6 +130,24 @@ namespace VDV.Spline.Editor
                 Line.AddSegment();
                 EditorUtility.SetDirty(Line);
             }
+
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Save"))
+            {
+                string path =
+                    EditorUtility.SaveFilePanel(string.Format("Save {0}", Title()), "", Title().ToLower(), "dat");
+                SerializationHelper.SerializeMonobehaviourContents(Line, path);
+            }
+
+            if (GUILayout.Button("Load"))
+            {
+                string path =
+                    EditorUtility.OpenFilePanel(string.Format("Load {0}", Title()), "", "dat");
+                SerializationHelper.DeserializeMonobehaviourContents(Line, path);
+                EditorUtility.SetDirty(Line);
+            }
+
+            GUILayout.EndHorizontal();
         }
 
         protected virtual void OnInspectorPoint(int index, TVertex point) {}
@@ -136,6 +155,11 @@ namespace VDV.Spline.Editor
         protected virtual bool AfterLoopToggleBox(bool newLoop)
         {
             return true;
+        }
+
+        protected virtual string Title()
+        {
+            return "Line";
         }
     }
 }
